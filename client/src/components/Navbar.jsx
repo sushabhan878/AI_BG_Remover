@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import { assets } from "../assets/assets.js";
-import { useClerk, UserButton, UserProfile, useUser } from "@clerk/clerk-react";
+import { useClerk, UserButton, useUser } from "@clerk/clerk-react";
 const Navbar = () => {
   const { openSignIn } = useClerk();
   const { isSignedIn, user } = useUser();
