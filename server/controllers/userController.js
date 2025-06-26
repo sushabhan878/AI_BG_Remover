@@ -56,8 +56,13 @@ export const clerkWebhook = async (req, res) => {
 // API controller function to get user available credit balance
 export const userCredits = async (req, res) => {
   try {
-    const { clerkId } = req.body;
+    const clerkId = req.clerkId;
     const userData = await User.findOne({ clerkId });
+    if (!userData) {
+      return res
+        .status(404)
+        .json({ success: false, message: "User not found" });
+    }
     res.json({ success: true, credits: userData.creditBalance });
   } catch (error) {
     console.log(error.message);

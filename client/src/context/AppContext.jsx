@@ -1,7 +1,8 @@
 import { useState, createContext } from "react";
 import { useAuth } from "@clerk/clerk-react";
 import axios from "axios";
-const AppContext = createContext();
+import { toast } from "react-toastify";
+export const AppContext = createContext();
 const AppContextProvider = (props) => {
   /// Constants
   const backend_url = import.meta.env.VITE_BACKEND_URL;
@@ -21,13 +22,20 @@ const AppContextProvider = (props) => {
         headers: { token },
       });
       if (data.success) {
+        console.log(data.credits);
         setCredit(data.credits);
       }
     } catch (error) {
       console.log(error);
+      toast.error(error.message);
     }
   };
-  const value = {};
+  const value = {
+    backend_url,
+    credit,
+    setCredit,
+    loadCreditsData,
+  };
   return (
     <AppContext.Provider value={value}>{props.children}</AppContext.Provider>
   );

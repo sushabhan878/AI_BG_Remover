@@ -7,11 +7,17 @@ const authUser = async (req, res, next) => {
     if (!token) {
       return res.json({
         success: false,
-        message: "Not authorized Login Again",
+        message: "Not authorized. Login again.",
       });
     }
     const token_decode = jwt.decode(token);
-    req.body.clerkId = token_decode.clerkId;
+    if (!token_decode?.clerkId) {
+      return res.json({
+        success: false,
+        message: "Invalid token payload",
+      });
+    }
+    req.clerkId = token_decode.clerkId;
     next();
   } catch (error) {
     console.log(error.message);
