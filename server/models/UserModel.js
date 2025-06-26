@@ -6,7 +6,7 @@ const userSchema = new mongoose.Schema({
     required: true,
     unique: true,
   },
-  emal: {
+  email: {
     type: String,
     required: true,
     unique: true,
@@ -27,6 +27,5 @@ const userSchema = new mongoose.Schema({
   },
 });
 
-const userModel = mongoose.models.user || mongoose.model("user", userSchema);
-
-export default userModel;
+const User = mongoose.model("User", userSchema);
+export default User;

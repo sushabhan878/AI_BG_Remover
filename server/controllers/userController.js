@@ -1,10 +1,12 @@
 import { Webhook } from "svix";
-import userModel from "../models/UserModel.js";
+import headers from "svix";
+import User from "../models/UserModel.js";
 // API controller functions to manage Clerk users with database
-const clerkWebhook = async (req, res) => {
+export const clerkWebhook = async (req, res) => {
   try {
     // Create SVIX instance with clerk webhook secret
     const whook = new Webhook(process.env.CLERK_WEBHOOK_SECRET);
+    // Verifying Header
     await whook.verify(JSON.stringify(req.body), {
       "svix-id": req.headers["svix-id"],
       "svix-timestamp": req.headers["svix-timestamp"],
@@ -22,7 +24,7 @@ const clerkWebhook = async (req, res) => {
           photo: data.image_url,
         };
 
-        await userModel.create(userData);
+        await User.create(userData);
         res.json({});
         break;
       }
@@ -33,12 +35,12 @@ const clerkWebhook = async (req, res) => {
           lastName: data.last_name,
           photo: data.image_url,
         };
-        await userModel.findOneAndUpdate({ clerkId: data.id }, userData);
+        await User.findOneAndUpdate({ clerkId: data.id }, userData);
         res.json({});
         break;
       }
       case "user.deleted": {
-        await userModel.findOneAndDelete({ clerkId: data.id });
+        await User.findOneAndDelete({ clerkId: data.id });
         res.json({});
         break;
       }
@@ -51,4 +53,14 @@ const clerkWebhook = async (req, res) => {
   }
 };
 
-export { clerkWebhook };
+// API controller function to get user available credit balance
+export const userCredits = async (req, res) => {
+  try {
+    const { clerkId } = req.body;
+    const userData = await User.findOne({ clerkId });
+    res.json({ success: true, credits: userData.creditBalance });
+  } catch (error) {
+    console.log(error.message);
+    res.json({ success: false, message: error.message });
+  }
+};
