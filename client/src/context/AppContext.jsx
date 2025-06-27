@@ -44,6 +44,29 @@ const AppContextProvider = (props) => {
       setImage(image);
       setResultImg(false);
       navigate("/result");
+      const token = await getToken();
+      const formData = new FormData();
+      image && formData.append("image", image);
+
+      const { data } = await axios.post(
+        backend_url + "/api/image/remove-bg",
+        formData,
+        {
+          headers: {
+            token,
+          },
+        }
+      );
+      if (data.success) {
+        setResultImg(data.resultImg);
+        data.creditBalance && setCredit(data.creditBalance);
+      } else {
+        toast.error(data.message);
+        data.creditBalance && setCredit(data.creditBalance);
+      }
+      if (data.creditBalance === 0) {
+        navigate("/buy-credit");
+      }
     } catch (error) {
       console.log(error);
       toast.error(error.message);
@@ -57,6 +80,8 @@ const AppContextProvider = (props) => {
     image,
     setImage,
     removeBg,
+    resultImg,
+    setResultImg,
   };
   return (
     <AppContext.Provider value={value}>{props.children}</AppContext.Provider>
