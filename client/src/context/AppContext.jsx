@@ -27,11 +27,9 @@ const AppContextProvider = (props) => {
         headers: { token },
       });
       if (data.success) {
-        console.log(data.credits);
         setCredit(data.credits);
       }
     } catch (error) {
-      console.log(error);
       toast.error(error.message);
     }
   };
@@ -48,6 +46,7 @@ const AppContextProvider = (props) => {
       const formData = new FormData();
       image && formData.append("image", image);
 
+      console.log("Sending request to backend...");
       const { data } = await axios.post(
         backend_url + "/api/image/remove-bg",
         formData,
@@ -57,7 +56,17 @@ const AppContextProvider = (props) => {
           },
         }
       );
+
+      console.log("Backend response received:", {
+        success: data.success,
+        resultImg: data.resultImg ? "Present" : "Missing",
+        resultImgLength: data.resultImg?.length,
+        creditBalance: data.creditBalance,
+        message: data.message,
+      });
+
       if (data.success) {
+        console.log("Setting resultImg with length:", data.resultImg?.length);
         setResultImg(data.resultImg);
         data.creditBalance && setCredit(data.creditBalance);
       } else {
@@ -68,7 +77,7 @@ const AppContextProvider = (props) => {
         navigate("/buy-credit");
       }
     } catch (error) {
-      console.log(error);
+      console.log("Frontend error:", error);
       toast.error(error.message);
     }
   };
